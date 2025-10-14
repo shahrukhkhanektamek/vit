@@ -22,71 +22,96 @@
         </div>
         <!-- end page title -->
 
-        <div class="row g-3 form_data" >
-
-             <?= csrf_field() ?>
-            <input type="hidden" name="id" value="<?=encript(@$row->id)?>">
+        
             
             <!--end col-->
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
                         <h4 class="card-title mb-0 flex-grow-1"><?=$data['title']?> Details</h4>
-                    </div><!-- end card header -->
+                    </div>
 
                     <div class="card-body">
                         <div class="live-preview">
                             <div class="row g-3">
-                                
-                                <div class="col-md-4">
-                                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="name" placeholder="" value="<?=@$row->name?>" required>
+
+                                <div class="col-12 text-center">
+                                    <?php
+                                    foreach ($certificates as $key => $value) {
+                                    ?>
+                                        <img id="certificateImg" style="width:50%;margin:0 auto;" src="<?=$value?>" />
+                                    <?php } ?>
                                 </div>
 
-                                <div class="col-md-4">
-                                    <label class="form-label">Mobile <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="phone" placeholder="" value="<?=@$row->phone?>" required>
+                                <div class="col-12 text-center">
+                                    <?php
+                                    foreach ($results as $key => $value) {
+                                    ?>
+                                        <img id="certificateImg" style="width:50%;margin:0 auto;" src="<?=$value?>" />
+                                    <?php } ?>
                                 </div>
 
-                                <div class="col-md-4">
-                                    <label class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="email" placeholder="" value="<?=@$row->email?>" required>
-                                </div>
-
-                                <div class="col-md-6 hide">
-                                    <label class="form-label">Slug <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="slug" placeholder="" value="<?=@$row->slug?>" >
-                                </div>
-
-
-                                
-
-                               
-                                <div class="col-md-12">
-                                    <label for="planStatus" class="form-label">Status <span class="text-danger">*</span></label>
-                                    <select class="js-example-basic-single" id="planStatus" name="status" data-minimum-results-for-search="Infinity" required>
-                                        <option value="1" <?php if(!empty(@$row) && @$row->status==1) echo'selected' ?> >Active</option>
-                                        <option value="0" <?php if(!empty(@$row) && @$row->status==0) echo'selected' ?> >Disable</option>
-                                    </select>
-                                    <div class="invalid-feedback">Please select any on option.</div>
-                                </div>
-                                
+                            </div>
+                            <div class="row justify-content-around">
+                                <button class="btn btn-success" style="width: fit-content;" onclick="downloadPDF()">Download Certificate</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--end col-->
-        </div>
+
+            
+
+         
         <!--end row-->
     </div>
     <!-- container-fluid -->
 </div><!-- End Page-content -->
 
 
-
-
-
-
-
 <?=view('backend/include/footer') ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+async function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4"
+  });
+
+  // ✅ Collect all certificate/result images
+  const allImages = document.querySelectorAll("#certificateImg");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  // ✅ Loop through all images and add each one to a new page
+  for (let i = 0; i < allImages.length; i++) {
+    const img = allImages[i];
+    const imageData = img.src;
+
+    if (i > 0) pdf.addPage(); // Add new page for every next image
+
+    // Calculate image aspect ratio
+    const tempImg = new Image();
+    tempImg.src = imageData;
+    await new Promise(resolve => {
+      tempImg.onload = () => {
+        const imgWidth = tempImg.width;
+        const imgHeight = tempImg.height;
+        const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+        const x = (pageWidth - imgWidth * ratio) / 2;
+        const y = (pageHeight - imgHeight * ratio) / 2;
+
+        pdf.addImage(imageData, "JPEG", x, y, imgWidth * ratio, imgHeight * ratio);
+        resolve();
+      };
+    });
+  }
+
+  // ✅ Download all pages in one PDF
+  pdf.save("<?=$row->name.'-'.$row->user_id?>-Documents.pdf");
+}
+</script>

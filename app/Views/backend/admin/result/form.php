@@ -86,6 +86,39 @@
                                     <input type="date" class="form-control" name="issue_date" placeholder="" value="<?=@$row->issue_date?>" required>
                                 </div>
                                 <div class="col-md-6">
+                                    <label class="form-label">Performance <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="performance" placeholder="" value="<?=@$row->performance?>" required>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label mb-2">Module Test <span class="text-danger">*</span></label>
+                                    <?php
+                                        $file_data = array(
+                                             "position"=>2,
+                                             "columna_name"=>"module",
+                                             "multiple"=>true,
+                                             "alt_text"=>true,
+                                             "row"=>@$row,
+                                        );
+                                        echo view('upload-multiple/feature',compact('file_data'));
+                                    ?>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label mb-2">Projects <span class="text-danger">*</span></label>
+                                    <?php
+                                        $file_data = array(
+                                             "position"=>3,
+                                             "columna_name"=>"project",
+                                             "multiple"=>true,
+                                             "alt_text"=>true,
+                                             "row"=>@$row,
+                                        );
+                                        echo view('upload-multiple/feature',compact('file_data'));
+                                    ?>
+                                </div>
+
+                                <div class="col-md-6">
                                     <label class="form-label">Status <span class="text-danger">*</span></label>
                                     <select class="js-example-basic-single" id="planStatus" name="status" required>
                                         <option value="1" <?php if(!empty(@$row) && @$row->status==1) echo'selected' ?> >Active</option>
