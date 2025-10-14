@@ -155,11 +155,11 @@ class AdminCertificateController extends BaseController
             $return_name = str_replace(" ","-" ,$row->name).'-'.str_replace(' ','-',$row->user_idd).'.jpg';
             $outputPath = FCPATH.'certificate/'.$return_name;
             
-            $imgPath = FCPATH.'certificate/'.'certificate.jpg';
+            $imgPath = FCPATH.'certificate/'.'certificate.png';
             $fontRelativePath = FCPATH.'certificate/fonts/'.'Arial_Italic.ttf';
             
             $angle = 0;
-            $image = imagecreatefromjpeg($imgPath);
+            $image = imagecreatefrompng($imgPath);
             $textColor = imagecolorallocate($image, 4, 47, 224);
             
             if (!$image) {
