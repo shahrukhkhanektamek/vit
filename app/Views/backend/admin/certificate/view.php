@@ -22,10 +22,7 @@
         </div>
         <!-- end page title -->
 
-        <form class="row g-3 form_data" action="<?=$data['route'].'/update'?>" method="post" enctype="multipart/form-data" id="form_data_submit" novalidate>
-
-             <?= csrf_field() ?>
-            <input type="hidden" name="id" value="<?=encript(@$row->id)?>">
+        
             
             <!--end col-->
             <div class="col-lg-12">
@@ -39,8 +36,10 @@
                             <div class="row g-3">
                                 
                                 <img id="certificateImg" style="width:50%;margin:0 auto;" src="<?=$data['img_base64']?>" />
-                                <button onclick="downloadPDF()">Download Certificate</button>
 
+                            </div>
+                            <div class="row justify-content-around">
+                                <button class="btn btn-success" style="width: fit-content;" onclick="downloadPDF()">Download Certificate</button>
                             </div>
                         </div>
                     </div>
@@ -49,9 +48,7 @@
 
             
 
-            
-            <!--end col-->
-        </form>
+         
         <!--end row-->
     </div>
     <!-- container-fluid -->

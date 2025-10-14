@@ -67,11 +67,15 @@ class AdminCertificateController extends BaseController
                 ->like($this->arr_values['table_name'] . '.name', $filter_search_value)
             ->groupEnd();
         }
+
+
+        
+        $total = $data_list->countAllResults(false);      
         
         $data_list = $data_list->orderBy($this->arr_values['table_name'] . '.id', $order_by)->limit($limit, $offset)->get()->getResult();
 
 
-        $total = $this->db->table($this->arr_values['table_name'])->countAll();
+        
         $data['pager'] = $this->pager->makeLinks($page, $limit, $total);
         $data['totalData'] = $total;
         $data['startData'] = $offset+1;
