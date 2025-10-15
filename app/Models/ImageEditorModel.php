@@ -17,7 +17,7 @@ class ImageEditorModel extends Model
     public static function createCertificate($row)
     {
         // Now you can proceed to embed the generated QR code image into your certificate
-        $return_name = str_replace(" ","-" ,$row->name).'-'.str_replace(' ','-',$row->user_idd).'.jpg';
+        $return_name = str_replace(" ","-" ,$row->name).'-'.str_replace(' ','-',env('APP_SORT').$row->user_idd).'.jpg';
         $outputPath = FCPATH.'imageeditor/'.$return_name;
         
         $imgPath = FCPATH.'imageeditor/'.'certificate.png';
@@ -217,7 +217,7 @@ class ImageEditorModel extends Model
     public static function createResult($row)
     {
         // Now you can proceed to embed the generated QR code image into your certificate
-        $return_name = str_replace(" ","-" ,$row->name).'-'.str_replace(' ','-',$row->user_idd).'result.jpg';
+        $return_name = str_replace(" ","-" ,$row->name).'-'.str_replace(' ','-',env('APP_SORT').$row->user_idd).'result.jpg';
         $outputPath = FCPATH.'imageeditor/'.$return_name;
         
         $imgPath = FCPATH.'imageeditor/'.'result.jpg';
@@ -285,24 +285,24 @@ class ImageEditorModel extends Model
 
         // Add Text for Name
         $text = strtoupper($row->name);
-        $fontSize = 35;
+        $fontSize = 30;
         $textBox = imagettfbbox($fontSize, $angle, $fontPath, $text);
         $textWidth = abs($textBox[4] - $textBox[0]);
         $textHeight = abs($textBox[5] - $textBox[1]);
-        $x = 250;
-        $y = 620;
+        $x = 240;
+        $y = 615;
         imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
 
 
 
         // Add Text for Student Id. No.
-        $text = strtoupper($row->user_idd);
+        $text = strtoupper(env('APP_SORT').$row->user_idd);
         $fontSize = 18;
         $textBox = imagettfbbox($fontSize, $angle, $fontRelativePathBold, $text);
         $textWidth = abs($textBox[4] - $textBox[0]);
         $textHeight = abs($textBox[5] - $textBox[1]);
-        $x = 965;
-        $y = 620;
+        $x = 985;
+        $y = 615;
         imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontRelativePathBold, $text);
 
 
@@ -342,14 +342,26 @@ class ImageEditorModel extends Model
         // ===============================
         // 📊 MODULE TEST SECTION
         // ===============================
-        $startY = 840;       // starting vertical position
-        $lineHeight = 30;    // gap between each line
-        $xLabel = 190;       // left side for module name
-        $xValue = 950;       // right side for marks
 
+
+        // Add Text for Course
+        $text = strtoupper("Module Test:");
         $fontSize = 18;
+        $textBox = imagettfbbox($fontSize, $angle, $fontRelativePathBold, $text);
+        $textWidth = abs($textBox[4] - $textBox[0]);
+        $textHeight = abs($textBox[5] - $textBox[1]);
+        $x = 160;
+        $y = 790;
+        imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontRelativePathBold, $text);
+
+
+        $fontSize = 15;
         $textColorModules = imagecolorallocate($image, 18, 54, 196); // black text
 
+        $lineHeight = 30;
+        $xLabel = 190;
+        $xValue = 950;
+        $startY = 830;
         foreach ($modules as $index => $module) {
 
             $y = $startY + ($index * $lineHeight);
@@ -359,34 +371,80 @@ class ImageEditorModel extends Model
             // Left side (subject)
             imagettftext($image, $fontSize, 0, $xLabel, $y, $textColorModules, $fontRelativePath, $text);
 
+            imagettftext($image, $fontSize, 0, 900, $y, $textColorModules, $fontRelativePathBold, ":");
+
             // Right side (marks)
             imagettftext($image, $fontSize, 0, $xValue, $y, $textColorModules, $fontRelativePath, $marks);
         }
 
-        // ===============================
-        // 🧩 PROJECT SECTION
-        // ===============================
-        $projectStartY = $startY + (count($modules) * $lineHeight) + 40; // small gap after modules
-        $projectFontSize = 18;
-        imagettftext($image, $projectFontSize, 0, $xLabel, $projectStartY, $textColorModules, $fontRelativePathBold, "Projects:");
 
+        $projectStartY = $startY + (count($modules) * $lineHeight) + 10; // small gap after modules
+        $projectFontSize = 18;
+        imagettftext($image, $projectFontSize, 0, $x, $projectStartY, $textColorModules, $fontRelativePathBold, "Projects:");
+        $projectStartY += 10;
         foreach ($projects as $i => $proj) {
             // $y = $projectStartY + (($i + 1) * $lineHeight);
             // imagettftext($image, $projectFontSize, 0, $xLabel + 30, $y, $textColorModules, $fontRelativePath, $proj);
 
 
-            $y = $startY + ($index * $lineHeight);
+            $y = $projectStartY = $projectStartY+$lineHeight;
+            // $y = $projectStartY;
             $text = "•    " . "$proj->title";
             $marks = "$proj->value";
 
             // Left side (subject)
             imagettftext($image, $fontSize, 0, $xLabel, $y, $textColorModules, $fontRelativePath, $text);
 
+            imagettftext($image, $fontSize, 0, 900, $y, $textColorModules, $fontRelativePathBold, ":");
+
             // Right side (marks)
             imagettftext($image, $fontSize, 0, $xValue, $y, $textColorModules, $fontRelativePath, $marks);
-
-
         }
+
+
+        // $startY = 830;       // starting vertical position
+        // $lineHeight = 30;    // gap between each line
+        // $xLabel = 160;       // left side for module name
+        // $xValue = 950;       // right side for marks
+
+        // $fontSize = 18;
+        // $textColorModules = imagecolorallocate($image, 18, 54, 196); // black text
+
+        // foreach ($modules as $index => $module) {
+
+        //     $y = $startY + ($index * $lineHeight);
+        //     $text = "•    " . "$module->title";
+        //     $marks = "$module->value";
+
+        //     // Left side (subject)
+        //     imagettftext($image, $fontSize, 0, $xLabel, $y, $textColorModules, $fontRelativePath, $text);
+
+        //     // Right side (marks)
+        //     imagettftext($image, $fontSize, 0, $xValue, $y, $textColorModules, $fontRelativePath, $marks);
+        // }
+
+        // // ===============================
+        // // 🧩 PROJECT SECTION
+        // // ===============================
+        // $projectStartY = $startY + (count($modules) * $lineHeight) + 10; // small gap after modules
+        // $projectFontSize = 18;
+        // imagettftext($image, $projectFontSize, 0, $xLabel, $projectStartY, $textColorModules, $fontRelativePathBold, "Projects:");
+
+        // foreach ($projects as $i => $proj) {
+        //     // $y = $projectStartY + (($i + 1) * $lineHeight);
+        //     // imagettftext($image, $projectFontSize, 0, $xLabel + 30, $y, $textColorModules, $fontRelativePath, $proj);
+
+
+        //     $y = $startY + ($index * $lineHeight);
+        //     $text = "•    " . "$proj->title";
+        //     $marks = "$proj->value";
+
+        //     // Left side (subject)
+        //     // imagettftext($image, $fontSize, 0, $xLabel, $y, $textColorModules, $fontRelativePath, $text);
+
+        //     // Right side (marks)
+        //     // imagettftext($image, $fontSize, 0, $xValue, $y, $textColorModules, $fontRelativePath, $marks);
+        // }
 
 
 
@@ -408,7 +466,7 @@ class ImageEditorModel extends Model
         $textWidth = abs($textBox[4] - $textBox[0]);
         $textHeight = abs($textBox[5] - $textBox[1]);
         $x = 950;
-        $y = 1330;
+        $y = 1325;
         imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
 
 

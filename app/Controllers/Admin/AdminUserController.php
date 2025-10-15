@@ -10,9 +10,9 @@ class AdminUserController extends BaseController
 {
      protected $arr_values = array(
         'routename'=>'admin-user.', 
-        'title'=>'User', 
+        'title'=>'Student', 
         'table_name'=>'users',
-        'page_title'=>'User',
+        'page_title'=>'Student',
         "folder_name"=>'backend/admin/user',
         "upload_path"=>'upload/',
         "page_name"=>'single-user.php',
