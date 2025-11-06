@@ -38,7 +38,7 @@
                         <div class="live-preview">
                             <div class="row g-3">
                                 
-                                <div class="col-md-4">
+                                <div class="col-md-12">
                                     <label class="form-label">Student <span class="text-danger">*</span></label>
                                     <select class="js-example-basic-single" id="select-all-user" name="user_id" required>
                                         <option value="">Select</option>
@@ -61,10 +61,7 @@
                                     <label class="form-label">Semester <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="semester" placeholder="" value="<?=@$row->semester?>" required>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Student Id No. <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="student_id_no" placeholder="" value="<?=@$row->student_id_no?>" required>
-                                </div>
+                                
                                 <div class="col-md-6">
                                     <label class="form-label">Batch Code <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="batch_code" placeholder="" value="<?=@$row->batch_code?>" required>
@@ -85,6 +82,39 @@
                                     <label class="form-label">Issue Date <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" name="issue_date" placeholder="" value="<?=@$row->issue_date?>" required>
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Performance <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="performance" placeholder="" value="<?=@$row->performance?>" required>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label mb-2">Module Test <span class="text-danger">*</span></label>
+                                    <?php
+                                        $file_data = array(
+                                             "position"=>2,
+                                             "columna_name"=>"module",
+                                             "multiple"=>true,
+                                             "alt_text"=>true,
+                                             "row"=>@$row,
+                                        );
+                                        echo view('upload-multiple/feature',compact('file_data'));
+                                    ?>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label mb-2">Projects <span class="text-danger">*</span></label>
+                                    <?php
+                                        $file_data = array(
+                                             "position"=>3,
+                                             "columna_name"=>"project",
+                                             "multiple"=>true,
+                                             "alt_text"=>true,
+                                             "row"=>@$row,
+                                        );
+                                        echo view('upload-multiple/feature',compact('file_data'));
+                                    ?>
+                                </div>
+
                                 <div class="col-md-6">
                                     <label class="form-label">Status <span class="text-danger">*</span></label>
                                     <select class="js-example-basic-single" id="planStatus" name="status" required>
@@ -129,6 +159,9 @@
 <?=view('backend/include/footer') ?>
 
 <script>
+
+
+    
 $(".required-info").on('click','.trash', function () {
     $(this).closest('.required-cont').remove();
     return false;

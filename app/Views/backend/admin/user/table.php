@@ -3,6 +3,8 @@
         <tr>
             <th data-ordering="false">Registered Date</th>
             <th data-ordering="false">Image</th>
+            <th data-ordering="false">Roll NO.</th>
+            <th data-ordering="false">Reg No.</th>
             <th data-ordering="false">User Name</th>
             <th data-ordering="false">Phone Number</th>
             <th data-ordering="false">Email Address</th>
@@ -17,6 +19,8 @@
             <tr>
                 <td><?=date("d M, Y h:i A", strtotime($value->add_date_time)) ?></td>
                 <td><img class="img-thumbnail" src="<?=image_check($value->image)?>" style="width: auto;height: 100px;"></td>
+                <td><?=env('APP_SORT').$value->user_id?></td>
+                <td><?=$value->reg_no?></td>
                 <td><?=$value->name?></td>
                 <td><?=$value->phone?></td>
                 <td><?=$value->email?></td>

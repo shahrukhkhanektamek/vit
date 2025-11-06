@@ -3,7 +3,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use CodeIgniter\Database\Database;
 use CodeIgniter\Config\Services;
-use App\Models\ImageModel;
+use App\Models\ImageEditorModel;
 
 class AdminCertificateController extends BaseController
 {
@@ -54,7 +54,8 @@ class AdminCertificateController extends BaseController
             users.email as email,
             users.phone as phone,
             users.image as image,
-            users.user_id as user_idd
+            users.user_id as user_idd,
+            users.reg_no as reg_no,
             "
         )
 
@@ -67,11 +68,15 @@ class AdminCertificateController extends BaseController
                 ->like($this->arr_values['table_name'] . '.name', $filter_search_value)
             ->groupEnd();
         }
+
+
+        
+        $total = $data_list->countAllResults(false);      
         
         $data_list = $data_list->orderBy($this->arr_values['table_name'] . '.id', $order_by)->limit($limit, $offset)->get()->getResult();
 
 
-        $total = $this->db->table($this->arr_values['table_name'])->countAll();
+        
         $data['pager'] = $this->pager->makeLinks($page, $limit, $total);
         $data['totalData'] = $total;
         $data['startData'] = $offset+1;
@@ -140,7 +145,7 @@ class AdminCertificateController extends BaseController
             users.phone as phone,
             users.image as image,
             users.user_id as user_idd,
-            users.user_id as reg_no,            
+            users.reg_no as reg_no,            
             "
         )
         ->where([$this->arr_values['table_name'].".id"=>$id,])->get()->getFirstRow();
@@ -149,182 +154,9 @@ class AdminCertificateController extends BaseController
             $db=$this->db;
 
 
-
-
-            // Now you can proceed to embed the generated QR code image into your certificate
-            $return_name = str_replace(" ","-" ,$row->name).'-'.str_replace(' ','-',$row->user_idd).'.jpg';
-            $outputPath = FCPATH.'certificate/'.$return_name;
-            
-            $imgPath = FCPATH.'certificate/'.'certificate.png';
-            $fontRelativePath = FCPATH.'certificate/fonts/'.'Arial_Italic.ttf';
-            
-            $angle = 0;
-            $image = imagecreatefrompng($imgPath);
-            $textColor = imagecolorallocate($image, 4, 47, 224);
-            
-            if (!$image) {
-                die('Failed to load image.');
-            }
-            
-            $fontPath = realpath($fontRelativePath);
-            if (!$fontPath) {
-                die('Invalid font path: ' . $fontRelativePath);
-            }
-            
-            if (!file_exists($fontPath)) {
-                die('Font file does not exist: ' . $fontPath);
-            }
-            
-            $imageWidth = imagesx($image);
-            $imageHeight = imagesy($image);
-            
-
-            // Add Text for Reg. Id.
-            $text = strtoupper($row->reg_no);
-            $fontSize = 18;
-            $textBox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $textWidth = abs($textBox[4] - $textBox[0]);
-            $textHeight = abs($textBox[5] - $textBox[1]);
-            $x = 935;
-            $y = 145;
-            imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
-
-
-            // Add Text for Name
-            $text = strtoupper($row->name);
-            $fontSize = 40;
-            $textBox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $textWidth = abs($textBox[4] - $textBox[0]);
-            $textHeight = abs($textBox[5] - $textBox[1]);
-            $x = ($imageWidth - $textWidth) / 2+50;
-            $y = 480;
-            imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
-
-
-            // Add Text for Performance
-            $text = strtoupper($row->performance);
-            $fontSize = 35;
-            $textBox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $textWidth = abs($textBox[4] - $textBox[0]);
-            $textHeight = abs($textBox[5] - $textBox[1]);
-            $x = ($imageWidth - $textWidth) / 2+50;
-            $y = 790;
-            imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
-
-            // Add Text for Issue Day
-            $text = strtoupper(date("d", strtotime($row->issue_date)));
-            $fontSize = 25;
-            $textBox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $textWidth = abs($textBox[4] - $textBox[0]);
-            $textHeight = abs($textBox[5] - $textBox[1]);
-            $x = 520;
-            $y = 1350;
-            imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
-
-
-            // Add Text for Month year
-            $text = strtoupper(date("M. Y", strtotime($row->issue_date)));
-            $fontSize = 25;
-            $textBox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $textWidth = abs($textBox[4] - $textBox[0]);
-            $textHeight = abs($textBox[5] - $textBox[1]);
-            $x = 750;
-            $y = 1350;
-            imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
-
-
-            // Add Text for Grade
-            $text = '('.strtoupper($row->grade).')';
-            $fontSize = 30;
-            $textBox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $textWidth = abs($textBox[4] - $textBox[0]);
-            $textHeight = abs($textBox[5] - $textBox[1]);
-            $x = 610;
-            $y = 1500;
-            imagettftext($image, $fontSize, $angle, $x, $y, $textColor, $fontPath, $text);
-            
-            
-          
-            // ✅ Add user image
-            $userImagePath = FCPATH . 'upload/' . $row->image;
-
-            if (file_exists($userImagePath)) {
-                $userImageInfo = getimagesize($userImagePath);
-                $userImage = null;
-
-                switch ($userImageInfo['mime']) {
-                    case 'image/jpeg':
-                        $userImage = imagecreatefromjpeg($userImagePath);
-                        break;
-
-                    case 'image/png':
-                        $userImage = imagecreatefrompng($userImagePath);
-                        break;
-
-                    case 'image/gif':
-                        $userImage = imagecreatefromgif($userImagePath);
-                        break;
-
-                    case 'image/webp':
-                        // 🟢 WebP support check
-                        if (function_exists('imagecreatefromwebp')) {
-                            $userImage = imagecreatefromwebp($userImagePath);
-                        } else {
-                            // 🔄 Convert WebP → PNG if GD doesn’t support it
-                            $tempPng = FCPATH . 'upload/temp_' . uniqid() . '.png';
-                            @exec("dwebp " . escapeshellarg($userImagePath) . " -o " . escapeshellarg($tempPng));
-
-                            if (file_exists($tempPng)) {
-                                $userImage = imagecreatefrompng($tempPng);
-                                @unlink($tempPng); // cleanup
-                            } else {
-                                die('WebP image could not be converted. Please enable GD WebP support or install WebP tools.');
-                            }
-                        }
-                        break;
-
-                    default:
-                        die('Unsupported image type: ' . $userImageInfo['mime']);
-                }
-
-                if (!$userImage) {
-                    die('Failed to load user image.');
-                }
-
-                // 🧩 Image placement and size
-                $usrX = 1010;
-                $usrY = 155;
-                $userWidth = 125;
-                $userHeight = 155;
-
-                // 🖼️ Resize and overlay
-                $resizedUserImage = imagescale($userImage, $userWidth, $userHeight);
-                imagecopy($image, $resizedUserImage, $usrX, $usrY, 0, 0, imagesx($resizedUserImage), imagesy($resizedUserImage));
-
-                // 🧹 Free up memory
-                imagedestroy($userImage);
-                imagedestroy($resizedUserImage);
-
-            } else {
-                die('User image not found: ' . $userImagePath);
-            }
-
-
-            // imagejpeg($image, $outputPath);
-            // imagedestroy($image);
-
-            ob_start();
-            imagejpeg($image);
-            $imageData = ob_get_contents();
-            ob_end_clean();
-            imagedestroy($image);
-            $base64 = 'data:image/jpeg;base64,' . base64_encode($imageData);
-            $data['img_base64'] = $base64;
-            
-            
-            $data['status'] = "200";
-            $data['url'] = base_url('certificate/').$return_name;
-
+            $ImageEditorModel = new ImageEditorModel();
+            $certificate = $ImageEditorModel->createCertificate($row);
+            $data['img_base64'] = $certificate;
 
             return view($this->arr_values['folder_name'].'/view',compact('data','row','db'));
         }

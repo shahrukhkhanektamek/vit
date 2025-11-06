@@ -20,7 +20,8 @@
                     <b>Name:</b> <?=$value->name?><br>
                     <b>Email:</b> <?=$value->email?><br>
                     <b>Phone:</b> <?=$value->phone?><br>
-                    <b>User ID:</b> <?=env('APP_SORT').$value->user_idd?><br>
+                    <b>Roll No.:</b> <?=env('APP_SORT').$value->user_idd?><br>
+                    <b>Registartion Number:</b> <?=$value->reg_no?><br>
                 </td>
                 <td><?=$value->performance?></td>
                 <td><?=$value->issue_date?></td>

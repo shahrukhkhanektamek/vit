@@ -251,11 +251,4 @@ class ImageManager
     }
 
 
-
-
-
-
-
-
-
 }

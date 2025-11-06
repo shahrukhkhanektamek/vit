@@ -120,19 +120,19 @@
     </div>
     <!-- end auth-page-wrapper -->
 
-        <footer class="footer login_style">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="text-center">
-                            <p class="mb-0 text-muted">© <script>document.write(new Date().getFullYear())</script> <?=env('APP_NAME')?>. 
+        <!--<footer class="footer login_style">-->
+        <!--    <div class="container">-->
+        <!--        <div class="row">-->
+        <!--            <div class="col-lg-12">-->
+        <!--                <div class="text-center">-->
+        <!--                    <p class="mb-0 text-muted">© <script>document.write(new Date().getFullYear())</script> <?=env('APP_NAME')?>. -->
                             <!--Crafted with <i class="mdi mdi-heart text-danger"></i> by <a href="#" target="_blank">{{env('COPY_WRIGHT')}}</a>-->
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <!--                    </p>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--    </div>-->
+        <!--</footer>-->
 
 
     <script src="<?=base_url('public/')?>/toast/saber-toast.js"></script>

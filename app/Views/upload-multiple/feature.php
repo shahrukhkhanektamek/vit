@@ -24,8 +24,8 @@ $row =(array) $row;
 		  	<li>
 	            <div class="input-group mt-2">
 	                
-	                <input type="text" class="form-control image_path" name="title<?=$file_data['columna_name'] ?>[]" placeholder="Feature Title" value="<?=$image_path ?>" >
-	                <input type="text" class="form-control image_alt" name="value<?=$file_data['columna_name'] ?>[]" placeholder="Feature Output" value="<?=$image_alt ?>" >	              	
+	                <input type="text" class="form-control image_path" name="title<?=$file_data['columna_name'] ?>[]" placeholder="Title Title" value="<?=$image_path ?>" >
+	                <input type="text" class="form-control image_alt" name="value<?=$file_data['columna_name'] ?>[]" placeholder="Value Output" value="<?=$image_alt ?>" >	              	
 
 	                <?php if($key_image==0 && $file_data['multiple']){ ?>
 	                	<button class="btn btn-dark material-shadow-none add-btn" type="button" data-cname="<?=$file_data['columna_name'] ?>" data-target="multiple-image-link<?=$file_data['position'] ?>" data-alt_text="<?=$file_data['alt_text'] ?>"><i class="ri-add-line"></i></button>

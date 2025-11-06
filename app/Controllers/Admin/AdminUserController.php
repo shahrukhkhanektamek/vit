@@ -4,14 +4,15 @@ use App\Controllers\BaseController;
 use CodeIgniter\Database\Database;
 use CodeIgniter\Config\Services;
 use App\Models\ImageModel;
+use App\Models\ImageEditorModel;
 
 class AdminUserController extends BaseController
 {
      protected $arr_values = array(
         'routename'=>'admin-user.', 
-        'title'=>'User', 
+        'title'=>'Student', 
         'table_name'=>'users',
-        'page_title'=>'User',
+        'page_title'=>'Student',
         "folder_name"=>'backend/admin/user',
         "upload_path"=>'upload/',
         "page_name"=>'single-user.php',
@@ -115,28 +116,61 @@ class AdminUserController extends BaseController
         $data['pagenation'] = array($this->arr_values['title']);
 
         $row = $this->db->table($this->arr_values['table_name'])
-        ->join('countries', 'countries.id = ' . $this->arr_values['table_name'] . '.country', 'left')
-        ->join('states', 'states.id = ' . $this->arr_values['table_name'] . '.state', 'left')
-
-        ->select("
-                {$this->arr_values['table_name']}.*, 
-                CASE
-                    WHEN {$this->arr_values['table_name']}.role = 2 THEN 'User'
-                    WHEN {$this->arr_values['table_name']}.role = 3 THEN 'Advocate'
-                    WHEN {$this->arr_values['table_name']}.role = 4 THEN 'CA'
-                    WHEN {$this->arr_values['table_name']}.role = 5 THEN 'Adviser'
-                    WHEN {$this->arr_values['table_name']}.role = 6 THEN 'Employee'
-                    ELSE 'other'
-                END AS role_name,
-                states.name as state_name,
-                countries.name as country_name,
-            ")
-
         ->where([$this->arr_values['table_name'] .".id"=>$id,])->get()->getFirstRow();
         if(!empty($row))
         {
             $db=$this->db;
-            return view($this->arr_values['folder_name'].'/account-view',compact('data','row','db'));
+            
+            
+            $result = $this->db->table("result")
+            ->join('users', 'users.id = result.user_id', 'left')        
+            ->select("
+                result.*,
+                users.name as name,
+                users.email as email,
+                users.phone as phone,
+                users.image as image,
+                users.user_id as user_idd,
+                users.reg_no as reg_no,            
+                "
+            )
+            ->where(["result.user_id"=>$id,])->get()->getResult();
+
+            
+            
+            $certificate = $this->db->table("certificate")
+            ->join('users', 'users.id = certificate.user_id', 'left')        
+            ->select("
+                certificate.*,
+                users.name as name,
+                users.email as email,
+                users.phone as phone,
+                users.image as image,
+                users.user_id as user_idd,
+                users.reg_no as reg_no,            
+                "
+            )
+            ->where(["certificate.user_id"=>$id,])->get()->getResult();
+
+            $results = [];
+            $certificates = [];
+            foreach ($result as $key => $value) {
+                $ImageEditorModel = new ImageEditorModel();
+                $results[] = $ImageEditorModel->createResult($value);
+            }
+            
+            foreach ($certificate as $key => $value) {
+                $ImageEditorModel = new ImageEditorModel();
+                $certificates[] = $ImageEditorModel->createCertificate($value);
+            }
+
+
+
+
+
+
+
+            return view($this->arr_values['folder_name'].'/view',compact('data','row','db','certificate','result','results','certificates'));
         }
         else
         {
@@ -257,6 +291,7 @@ class AdminUserController extends BaseController
             "pincode"=>$this->request->getPost('pincode'),
             "status"=>$this->request->getPost('status'),
             "is_delete"=>0,
+            "role"=>2,
         ];
 
 
@@ -281,12 +316,21 @@ class AdminUserController extends BaseController
         $entryStatus = false;
         if(empty($id))
         {
+            $userId = 100;
+            $getUser = $this->db->table($this->arr_values['table_name'])->orderBy('id', 'desc')->get()->getFirstRow();
+            if(!empty($getUser)) $userId = $getUser->user_id+1;
+            $data['user_id'] = $userId;
+            
+            
             $data['add_by'] = $add_by;
             $data['add_date_time'] = date("Y-m-d H:i:s");
             $data['update_date_time'] = date("Y-m-d H:i:s");
             if($this->db->table($this->arr_values['table_name'])->insert($data)) $entryStatus = true;
             else $entryStatus = false;
             $id = $insertId = $this->db->insertID();
+            
+            
+            
         }
         else
         {

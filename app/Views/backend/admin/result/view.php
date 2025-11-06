@@ -35,8 +35,10 @@
                             <div class="row g-3">
                                 
                                 <img id="certificateImg" style="width:50%;margin:0 auto;" src="<?=$data['img_base64']?>" />
-                                <button onclick="downloadPDF()">Download Certificate</button>
 
+                            </div>
+                            <div class="row justify-content-around">
+                                <button class="btn btn-success" style="width: fit-content;" onclick="downloadPDF()">Download Certificate</button>
                             </div>
                         </div>
                     </div>

@@ -233,17 +233,16 @@ class Home extends BaseController
                     WHEN {$table_name}.role = 3 THEN 'Advocate' 
                     WHEN {$table_name}.role = 4 THEN 'CA' 
                     WHEN {$table_name}.role = 5 THEN 'Adviser' 
+                    WHEN {$table_name}.role = 2 THEN 'User' 
                     ELSE 'other' 
                 END AS role_name,
                 ")
             ->where("{$table_name}.status", 1)
             ->whereIn("{$table_name}.role", [2])
             ->where("{$table_name}.is_delete", 0);
-        if (!empty($search)) {
-            $builder->groupStart()
-                ->like("{$table_name}.name", $search)
-                ->groupEnd();
-        }
+           if (!empty($search)) {
+                $builder->like("CONCAT({$table_name}.name, ' ', {$table_name}.email, ' ', {$table_name}.phone, ' ', {$table_name}.user_id)", $search);
+            }
         $data_list = $builder
             ->orderBy("{$table_name}.id", 'desc')
             ->limit(50, 0)
